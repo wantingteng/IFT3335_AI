@@ -159,6 +159,7 @@ import time, random
 
 
 
+
 def solve_all(grids, name='', showif=0.0):
     """Attempt to solve a sequence of grids. Report results.
     When showif is a number of seconds, display puzzles that take longer.
