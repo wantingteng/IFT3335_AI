@@ -104,15 +104,18 @@ def eliminate(values, s, d):
 
 
 ################ Display as 2-D grid ################
-
+#原来的display打印出不出来，换了一个写法
 def display(values):
     "Display these values as a 2-D grid."
     width = 1 + max(len(values[s]) for s in squares)
-    line = '+'.join(['-' * (width * 3)] * 3)
+    line = '+'.join(['-'*(width*3)]*3)
     for r in rows:
-        print(''.join(values[r + c].center(width) + ('|' if c in '36' else ''))
-              for c in cols)
-        if r in 'CF': print(line)
+        row_output = ''
+        for c in cols:
+            row_output += values[r + c].center(width) + ('|' if c in '36' else '')
+        print(row_output)
+        if r in 'CF':
+            print(line)
 
 
 ################ Search ################
@@ -126,8 +129,15 @@ def search(values):
         return False  ## Failed earlier
     if all(len(values[s]) == 1 for s in squares):
         return values  ## Solved!
+
     ## Chose the unfilled square s with the fewest possibilities
-    n, s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
+    #n, s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
+
+    # Désactiver le 3ième critère qui choisit la case avec le moins de possibilités sous la ligne
+    #et le remplacer par choisir une case et un chiffre au hasard
+    square_list = [s for s in squares if len(values[s]) > 1]
+    s = random.choice(square_list)
+
     return some(search(assign(values.copy(), s, d))
                 for d in values[s])
 
@@ -166,9 +176,9 @@ def solve_all(grids, name='', showif=0.0):
     When showif is None, don't display any puzzles."""
 
     def time_solve(grid):
-        start = time.clock()
+        start = time.perf_counter()
         values = solve(grid)
-        t = time.clock() - start
+        t = time.perf_counter() - start
         ## Display puzzles that take long enough
         if showif is not None and t > showif:
             display(grid_values(grid))
@@ -211,7 +221,9 @@ hard1 = '.....6....59.....82....8....45........3........6..3.54...325..6........
 
 if __name__ == '__main__':
     test()
-    solve_all(from_file("top95.txt"), "95sudoku", None)
+    solve_all(from_file("top95.txt"), "95sudoku",None)
+    solve_all(from_file("100sudoku.txt"), "100sudoku",None)
+
     # solve_all(from_file("easy50.txt", '========'), "easy", None)
     # solve_all(from_file("easy50.txt", '========'), "easy", None)
     # solve_all(from_file("top95.txt"), "hard", None)
