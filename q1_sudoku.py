@@ -131,15 +131,16 @@ def search(values):
         return values  ## Solved!
 
     ## Chose the unfilled square s with the fewest possibilities
-    #n, s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
+    n, s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
 
-    # Désactiver le 3ième critère qui choisit la case avec le moins de possibilités sous la ligne
-    #et le remplacer par choisir une case et un chiffre au hasard
-    square_list = [s for s in squares if len(values[s]) > 1]
-    s = random.choice(square_list)
+
 
     return some(search(assign(values.copy(), s, d))
                 for d in values[s])
+
+
+
+
 
 
 ################ Utilities ################
