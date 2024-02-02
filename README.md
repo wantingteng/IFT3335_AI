@@ -20,9 +20,13 @@ This game from Japan is represented in a 9*9 grid, divided into 9 squares of 9 b
 # Work to be Done:
 
 - [ ] (10%) Run Norvig's program (in Python) on a set of Sudoku cases (see the 100 test configurations on Studium).
+    
 - [ ] (20%) Implement at least one other heuristic, in addition to Norvig's 3rd criterion. You can choose which heuristics to use. You can look for heuristics to implement in web articles or on Studium. These heuristics should improve the performance of the implemented algorithms (you must confirm this in your tests).
+      
 - [ ] (20%) Implement the Hill-Climbing algorithm for this problem. Starting from the initial configuration, fill each 3x3 square with randomly possible digits, but check the constraints for the same square. This will cause conflicts on the rows and columns. Then, use Hill-Climbing to try to improve the configuration as much as possible, by swapping two of the filled digits in a square.
+      
 - [ ] (20%) Use simulated annealing. Hill-Climbing can get stuck on a local optimum without being able to arrange all the digits correctly. This algorithm can be improved by using simulated annealing. You are asked to implement a simplified version of the algorithm described by Lewis. You use the same strategy to decrease the temperature: ti+1 = α · ti with α=0.99. Normally, the use of simulated annealing should improve the success rate on Hill-climbing.
+      
 - [ ] (20%) Compare the algorithms by running them on 100 starting configurations (see the list of configurations on Studium). Compare the percentage of successful games (for which the algorithm finds the solution), as well as the time used. Make your personal analysis to see if what you observe corresponds well to the analyses made in the course. Your comparisons and analyses must be described in a short 2-3 page report.
 
 # To Submit:
