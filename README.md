@@ -6,11 +6,12 @@
 
 # Submission Date:
 
-The deadline for submission is <font color=red>February 16, before 23:59</font>.
+The deadline for submission is <span style="color:red;">February 16, before 23:59</span>.
 
 # Evaluation:
 
-This project counts for <font color=red>15%</font> of the total grade.
+This project counts for <span style="color:red;">15%</span> of the total grade.
+
 
 # The Sudoku Game
 
