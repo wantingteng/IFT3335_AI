@@ -1,5 +1,6 @@
 ## Solve Every Sudoku Puzzle
 
+
 ## See http://norvig.com/sudoku.html
 
 ## Throughout this program we have:
@@ -107,7 +108,6 @@ def eliminate(values, s, d):
 #原来的display打印出不出来，换了一个写法
 def display(values):
     "Display these values as a 2-D grid."
-
     width = 1 + max(len(values[s]) for s in squares)
     line = '+'.join(['-'*(width*3)]*3)
     for r in rows:
@@ -122,74 +122,29 @@ def display(values):
 ################ Search ################
 
 def solve(grid): return search(parse_grid(grid))
-  #parse_grid(grid) would return a dict like {'A1': '23456789', 'A2': '1', ...}
 
 
-# def search(values):
-#     "Using depth-first search and propagation, try all possible values."
-#     if values is False:
-#         return False  ## Failed earlier
-#     if all(len(values[s]) == 1 for s in squares):
-#         return values  ## Solved!
-#
-#     ## Chose the unfilled square s with the fewest possibilities
-#     n, s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
-#     return some(search(assign(values.copy(), s, d))
-#                 for d in values[s])
 def search(values):
+    "Using depth-first search and propagation, try all possible values."
     if values is False:
         return False  ## Failed earlier
-
     if all(len(values[s]) == 1 for s in squares):
-        return values   ## Solved!
+        return values  ## Solved!
 
-
-    found_values = hidden_pairs(values.copy())
-    if len(found_values) == 0:  #dict vide
-        return False
-
-    #find an insolved square
-    for s in squares:
-        if len(found_values[s]) > 1:
-            break
-
-    return some(search(assign(found_values.copy(), s, d))for d in found_values[s])
+    ## Chose the unfilled square s with the fewest possibilities
+    n, s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
 
 
 
-
-def hidden_pairs(values):
-    for unit in unitlist:
-        candidature = {}
-        for s in unit:
-            for d in values[s]:
-                candidature[d] = candidature[d] + [s] if d in candidature else [s]
-
-
-        dict_hidden_pairs = {}
-        for d, elem in candidature.items():
-            if len(elem) == 2:
-                elem_tuple = tuple(elem)  #hashable type
-                dict_hidden_pairs[elem_tuple] = dict_hidden_pairs[elem_tuple] + [d] if (elem_tuple
-                                                                                        in dict_hidden_pairs) else [d]
-
-        for elem, candidates in dict_hidden_pairs.items():
-            if len(candidates) == 2:
-                for s in elem:
-                    values[s] = ''.join(candidates)
-
-
-    return values
+    return some(search(assign(values.copy(), s, d))
+                for d in values[s])
 
 
 
 
 
 
-
-
-
- ################ Utilities ################
+################ Utilities ################
 
 def some(seq):
     "Return some element of seq that is true."
@@ -262,23 +217,57 @@ def random_puzzle(N=17):
     return random_puzzle(N)  ## Give up and make a new puzzle
 
 
-grid1 = '003020600900305001001806400008102900700000008006708200002609500800203009005010300'
-grid2 = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
-hard1 = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
+def string_to_sudoku_array(puzzle_str):
+    # Replace '.' with '0' in the string
+    puzzle_str = puzzle_str.replace('.', '0')
 
-if __name__ == '__main__':
-    test()
-    solve_all(from_file("top95.txt"), "95sudoku",None)
-    solve_all(from_file("100sudoku.txt"), "100sudoku",None)
+    # Convert the string to a 9x9 Sudoku array
+    sudoku_array = []
+    for i in range(9):
+        row = []
+        for j in range(9):
+            row.append(int(puzzle_str[i * 9 + j]))
+        sudoku_array.append(row)
 
-    # solve_all(from_file("easy50.txt", '========'), "easy", None)
-    # solve_all(from_file("easy50.txt", '========'), "easy", None)
-    # solve_all(from_file("top95.txt"), "hard", None)
-    # solve_all(from_file("hardest.txt"), "hardest", None)
-    # solve_all([random_puzzle() for _ in range(99)], "random", 100.0)
+    return sudoku_array
 
-## References used:
-## http://www.scanraid.com/BasicStrategies.htm
-## http://www.sudokudragon.com/sudokustrategy.htm
-## http://www.krazydad.com/blog/2005/09/29/an-index-of-sudoku-strategies/
-## http://www2.warwick.ac.uk/fac/sci/moac/currentstudents/peter_cock/python/sudoku/
+
+
+
+def initial():
+    sudoku = [[0 for _ in range(9)] for _ in range(9)]
+    numbers = list(range(1, 10))
+
+    numbers = list(range(1,10))
+
+    for i in range(0, 9, 3):
+        for j in range(0, 9, 3):
+            shuffled_numbers = shuffled(numbers)
+
+            for k in range(3):
+                for l in range(3):
+
+                    sudoku[i + k][j + l] = shuffled_numbers.pop()
+
+
+    return sudoku
+
+
+#just for test my initial sukudo config for 9 * 9
+def print_carre(sudoku):
+    for i in range(0, 9):
+        for j in range(0, 9):
+            print( sudoku[i ][ j ] , end =" ")
+        print()
+
+
+
+init = initial()
+print_carre(init)
+
+
+
+# puzzle = random_puzzle(17) # Assuming you have defined all necessary functions and variables from the original code
+# print_puzzle(puzzle)
+# print(puzzle)
+
