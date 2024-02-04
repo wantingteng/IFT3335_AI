@@ -1,157 +1,5 @@
-## Solve Every Sudoku Puzzle
-
-
-## See http://norvig.com/sudoku.html
-
-## Throughout this program we have:
-##   r is a row,    e.g. 'A'
-##   c is a column, e.g. '3'
-##   s is a square, e.g. 'A3'
-##   d is a digit,  e.g. '9'
-##   u is a unit,   e.g. ['A1','B1','C1','D1','E1','F1','G1','H1','I1']
-##   grid is a grid,e.g. 81 non-blank chars, e.g. starting with '.18...7...
-##   values is a dict of possible values, e.g. {'A1':'12349', 'A2':'8', ...}
-
-def cross(A, B):
-    "Cross product of elements in A and elements in B."
-    return [a + b for a in A for b in B]
-
-
-digits = '123456789'
-rows = 'ABCDEFGHI'
-cols = digits
-squares = cross(rows, cols)
-unitlist = ([cross(rows, c) for c in cols] +
-            [cross(r, cols) for r in rows] +
-            [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')])
-units = dict((s, [u for u in unitlist if s in u])
-             for s in squares)
-peers = dict((s, set(sum(units[s], [])) - set([s]))
-             for s in squares)
-
-
-################ Unit Tests ################
-
-def test():
-    "A set of tests that must pass."
-    assert len(squares) == 81
-    assert len(unitlist) == 27
-    assert all(len(units[s]) == 3 for s in squares)
-    assert all(len(peers[s]) == 20 for s in squares)
-    assert units['C2'] == [['A2', 'B2', 'C2', 'D2', 'E2', 'F2', 'G2', 'H2', 'I2'],
-                           ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9'],
-                           ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']]
-    assert peers['C2'] == set(['A2', 'B2', 'D2', 'E2', 'F2', 'G2', 'H2', 'I2',
-                               'C1', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9',
-                               'A1', 'A3', 'B1', 'B3'])
-    print('All tests pass.')
-
-
-################ Parse a Grid ################
-
-def parse_grid(grid):
-    """Convert grid to a dict of possible values, {square: digits}, or
-    return False if a contradiction is detected."""
-    ## To start, every square can be any digit; then assign values from the grid.
-    values = dict((s, digits) for s in squares)
-    for s, d in grid_values(grid).items():
-        if d in digits and not assign(values, s, d):
-            return False  ## (Fail if we can't assign d to square s.)
-    return values
-
-
-def grid_values(grid):
-    "Convert grid into a dict of {square: char} with '0' or '.' for empties."
-    chars = [c for c in grid if c in digits or c in '0.']
-    assert len(chars) == 81
-    return dict(zip(squares, chars))
-
-
-################ Constraint Propagation ################
-
-def assign(values, s, d):
-    """Eliminate all the other values (except d) from values[s] and propagate.
-    Return values, except return False if a contradiction is detected."""
-    other_values = values[s].replace(d, '')
-    if all(eliminate(values, s, d2) for d2 in other_values):
-        return values
-    else:
-        return False
-
-
-def eliminate(values, s, d):
-    """Eliminate d from values[s]; propagate when values or places <= 2.
-    Return values, except return False if a contradiction is detected."""
-    if d not in values[s]:
-        return values  ## Already eliminated
-    values[s] = values[s].replace(d, '')
-    ## (1) If a square s is reduced to one value d2, then eliminate d2 from the peers.
-    if len(values[s]) == 0:
-        return False  ## Contradiction: removed last value
-    elif len(values[s]) == 1:
-        d2 = values[s]
-        if not all(eliminate(values, s2, d2) for s2 in peers[s]):
-            return False
-    ## (2) If a unit u is reduced to only one place for a value d, then put it there.
-    for u in units[s]:
-        dplaces = [s for s in u if d in values[s]]
-        if len(dplaces) == 0:
-            return False  ## Contradiction: no place for this value
-        elif len(dplaces) == 1:
-            # d can only be in one place in unit; assign it there
-            if not assign(values, dplaces[0], d):
-                return False
-    return values
-
-
-################ Display as 2-D grid ################
-#原来的display打印出不出来，换了一个写法
-def display(values):
-    "Display these values as a 2-D grid."
-    width = 1 + max(len(values[s]) for s in squares)
-    line = '+'.join(['-'*(width*3)]*3)
-    for r in rows:
-        row_output = ''
-        for c in cols:
-            row_output += values[r + c].center(width) + ('|' if c in '36' else '')
-        print(row_output)
-        if r in 'CF':
-            print(line)
-
-
-################ Search ################
-
-def solve(grid): return search(parse_grid(grid))
-
-
-def search(values):
-    "Using depth-first search and propagation, try all possible values."
-    if values is False:
-        return False  ## Failed earlier
-    if all(len(values[s]) == 1 for s in squares):
-        return values  ## Solved!
-
-    ## Chose the unfilled square s with the fewest possibilities
-    n, s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
-
-
-
-    return some(search(assign(values.copy(), s, d))
-                for d in values[s])
-
-
-
-
-
-
-################ Utilities ################
-
-def some(seq):
-    "Return some element of seq that is true."
-    for e in seq:
-        if e: return e
-    return False
-
+#100sudoku 有81行， 每行都是一个 正常的数独游戏 ，for循环
+#没用提供的字典，不是太熟悉，还是选择用二维数组
 
 def from_file(filename, sep='\n'):
     "Parse a file into a list of strings, separated by sep."
@@ -165,80 +13,18 @@ def shuffled(seq):
     return seq
 
 
-################ System test ################
-
 import time, random
 
 
 
+#入参 二维数组
+def initial(val):
+    length = len(val)
 
-def solve_all(grids, name='', showif=0.0):
-    """Attempt to solve a sequence of grids. Report results.
-    When showif is a number of seconds, display puzzles that take longer.
-    When showif is None, don't display any puzzles."""
-
-    def time_solve(grid):
-        start = time.perf_counter()
-        values = solve(grid)
-        t = time.perf_counter() - start
-        ## Display puzzles that take long enough
-        if showif is not None and t > showif:
-            display(grid_values(grid))
-            if values: display(values)
-            print('(%.2f seconds)\n' % t)
-        return (t, solved(values))
-
-    times, results = zip(*[time_solve(grid) for grid in grids])
-    N = len(grids)
-    if N > 1:
-        print("Solved %d of %d %s puzzles (avg %.2f secs (%d Hz), max %.2f secs)." % (
-            sum(results), N, name, sum(times) / N, N / sum(times), max(times)))
-
-
-def solved(values):
-    "A puzzle is solved if each unit is a permutation of the digits 1 to 9."
-
-    def unitsolved(unit): return set(values[s] for s in unit) == set(digits)
-
-    return values is not False and all(unitsolved(unit) for unit in unitlist)
-
-
-def random_puzzle(N=17):
-    """Make a random puzzle with N or more assignments. Restart on contradictions.
-    Note the resulting puzzle is not guaranteed to be solvable, but empirically
-    about 99.8% of them are solvable. Some have multiple solutions."""
-    values = dict((s, digits) for s in squares)
-    for s in shuffled(squares):
-        if not assign(values, s, random.choice(values[s])):
-            break
-        ds = [values[s] for s in squares if len(values[s]) == 1]
-        if len(ds) >= N and len(set(ds)) >= 8:
-            return ''.join(values[s] if len(values[s]) == 1 else '.' for s in squares)
-    return random_puzzle(N)  ## Give up and make a new puzzle
-
-
-def string_to_sudoku_array(puzzle_str):
-    # Replace '.' with '0' in the string
-    puzzle_str = puzzle_str.replace('.', '0')
-
-    # Convert the string to a 9x9 Sudoku array
-    sudoku_array = []
-    for i in range(9):
-        row = []
-        for j in range(9):
-            row.append(int(puzzle_str[i * 9 + j]))
-        sudoku_array.append(row)
-
-    return sudoku_array
-
-
-
-
-def initial():
-    sudoku = [[0 for _ in range(9)] for _ in range(9)]
-    numbers = list(range(1, 10))
+    puzzle_arr =  val
 
     numbers = list(range(1,10))
+
 
     for i in range(0, 9, 3):
         for j in range(0, 9, 3):
@@ -247,23 +33,216 @@ def initial():
             for k in range(3):
                 for l in range(3):
 
-                    sudoku[i + k][j + l] = shuffled_numbers.pop()
+                    if puzzle_arr[i + k][j + l] == 0:
+                        for candidate in shuffled_numbers:
+
+                            if candidate not in [puzzle_arr[i + m][j + n] for m in range(3) for n in range(3)]:
+                                puzzle_arr[i + k][j + l] = candidate
+                                shuffled_numbers.remove(candidate)
+                                break
+
+    return puzzle_arr
 
 
-    return sudoku
-
-
-#just for test my initial sukudo config for 9 * 9
-def print_carre(sudoku):
+#just for test initial()
+def print_care(sukudo):
+    leng = len(sukudo)
     for i in range(0, 9):
         for j in range(0, 9):
-            print( sudoku[i ][ j ] , end =" ")
+            print(sukudo[i][j] , end=" ")
         print()
 
 
 
-init = initial()
-print_carre(init)
+#用于检测初始化已经有的数字 不可以参与swap 入参 二维数组 出参：数组tuple
+def detector(sudoku):
+
+
+    unchanged_tuple = []
+
+    for i in range(0, 9, 3):
+        for j in range(0, 9, 3):
+
+
+            for k in range(3):
+                for l in range(3):
+
+                    if sudoku[i + k][j + l] != 0:
+                        unchanged_tuple.append((i+k,j+l))
+
+    return unchanged_tuple
+
+
+
+# 找到一个宫里可进行交换的数字，初始化已经有数字的不能动
+def find_all_possibilities(arr,pos1, pos2, li):
+    swaps=[]
+    for i in range(3):
+        for j in range(3):
+            if (i+pos1,j+pos2) not in li: #初始化已经存在的数字不能进行交换
+                swaps.append((i,j))
+
+    return best_swap(arr,swaps,pos1,pos2)
+
+
+
+def best_swap(arr,swaps,pos1,pos2):
+    min_conflicts = float('inf')
+    best_swap_pair = None
+    for i in range(len(swaps)):
+        for j in range(i + 1, len(swaps)):
+            swap1 = swaps[i] #example : (1,1)
+            swap2 = swaps[j]
+
+            # 转换为全局坐标
+            global_swap1 = (swap1[0] + pos1, swap1[1] + pos2)
+            global_swap2 = (swap2[0] + pos1, swap2[1] + pos2)
+
+            # 模拟交换两个位置的值（使用全局坐标）
+            arr[global_swap1[0]][global_swap1[1]], arr[global_swap2[0]][global_swap2[1]] = arr[global_swap2[0]][
+                global_swap2[1]], arr[global_swap1[0]][global_swap1[1]]
+
+            current_conflicts = conflict_count(arr)
+
+            # 如果当前冲突数更少，更新最佳交换对
+            if current_conflicts < min_conflicts:
+                min_conflicts = current_conflicts
+                best_swap_pair = (swap1, swap2)  # 保存局部坐标
+
+            # 撤销交换
+            arr[global_swap1[0]][global_swap1[1]], arr[global_swap2[0]][global_swap2[1]] = arr[global_swap2[0]][
+                global_swap2[1]], arr[global_swap1[0]][global_swap1[1]]
+
+    if best_swap_pair:
+        global_best_swap1 = (best_swap_pair[0][0] + pos1, best_swap_pair[0][1] + pos2)
+        global_best_swap2 = (best_swap_pair[1][0] + pos1, best_swap_pair[1][1] + pos2)
+        arr[global_best_swap1[0]][global_best_swap1[1]], arr[global_best_swap2[0]][global_best_swap2[1]] = \
+        arr[global_best_swap2[0]][global_best_swap2[1]], arr[global_best_swap1[0]][global_best_swap1[1]]
+        return best_swap_pair
+
+    return None
+
+
+#检测冲突（每行＋每列）
+def conflict_count(arr):
+
+    length = len(arr)
+    total_conflict = 0
+    for i in range (9):
+        row_confilct = 9 - len(set(arr[i]))
+        templist = []
+        for j in range(length):
+            templist.append(arr[j][i])
+
+        col_confilct = 9 - len(set(templist))
+
+        total_conflict = total_conflict + row_confilct + col_confilct
+
+    return total_conflict
+
+
+def hill_climbing(val,list):
+
+    init = initial(val)
+
+    conflict_nums = conflict_count(init)
+
+    #print('coflict '+str(conflict_nums))
+
+    attempts = 0 #没招了
+
+    while conflict_nums > 0 and attempts < 1000 :
+        attempts += 1
+        #print('conflict now' + str(conflict_nums))
+        random_num1 = random.choice([0, 3, 6])
+        random_num2 = random.choice([0, 3, 6])
+        best_pair = find_all_possibilities(init,random_num1, random_num2, list)
+
+
+
+        if best_pair is not None:
+            conflict_nums_after = conflict_count(init)
+            if conflict_nums_after < conflict_nums:
+                conflict_nums_after = conflict_count(init)
+                conflict_nums = conflict_nums_after
+
+
+
+
+
+        else:
+            # 理论上如果没有找到更好的交换  但是我始终运行不到这
+            print('No better swap found.')
+            break  # 或者尝试其他策略
+
+    return conflict_nums
+
+
+#100sudoku 文件 由一行字符串改成 数组 二维的 9*9
+def parse_file(one_row_in_file):
+    sudoku_grid = []
+
+    for i in range(0, 81, 9):
+        l = []
+        for j in range(9):
+            digit = int(one_row_in_file[i + j])
+            l.append(digit)
+        sudoku_grid.append(l)
+
+    return sudoku_grid
+
+def solve_prob(grids):
+    count = 0
+    for gird in grids:
+        start = time.time()
+        arr = parse_file(gird)
+        li = detector(arr)
+        global_conflicts_number = hill_climbing(arr,li)
+        t = time.time() - start
+        count += 1
+        print(f'puzzle {count} : {global_conflicts_number} conflicts done in {"%.2f" % t} seconds')
+
+
+#execute：
+solve_prob(from_file("100sudoku.txt"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # init = initial()
+# print_carre(init)
+# num_before = conflict_count(init)
+# print(num_before)
+# print("--------------------------")
+# swap(init,3,3)
+# print_carre(init)
+# num_after = conflict_count(init)
+# print(num_after)
 
 
 
