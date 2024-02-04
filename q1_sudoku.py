@@ -223,7 +223,8 @@ hard1 = '.....6....59.....82....8....45........3........6..3.54...325..6........
 if __name__ == '__main__':
     test()
     solve_all(from_file("top95.txt"), "95sudoku",None)
-    solve_all(from_file("100sudoku.txt"), "100sudoku",None)
+    solve_all(from_file("100sudoku.txt"), "100sudoku")
+    #print(from_file("100sudoku.txt"))
 
     # solve_all(from_file("easy50.txt", '========'), "easy", None)
     # solve_all(from_file("easy50.txt", '========'), "easy", None)
