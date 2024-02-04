@@ -169,7 +169,7 @@ def hill_climbing(val,list):
             if conflict_nums_after < conflict_nums:
 
                 conflict_nums = conflict_nums_after
-                #print(conflict_nums)
+                print("on a " + str(conflict_nums) + " conflicts")
 
         else:
             # 理论上如果没有找到更好的交换
@@ -202,6 +202,7 @@ def solve_prob(grids):
         t = time.time() - start
         count += 1
         print(f'puzzle {count} : {global_conflicts_number} conflicts done in {"%.2f" % t} seconds')
+        print("---------------------------------------------")
 
 
 #execute：
