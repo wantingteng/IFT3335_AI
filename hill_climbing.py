@@ -87,6 +87,7 @@ def find_all_possibilities(arr,pos1, pos2, li):
 
 
 def best_swap(arr,swaps,pos1,pos2):
+    origi = conflict_count(arr)
     min_conflicts = float('inf')
     best_swap_pair = None
     for i in range(len(swaps)):
@@ -113,6 +114,10 @@ def best_swap(arr,swaps,pos1,pos2):
             arr[global_swap1[0]][global_swap1[1]], arr[global_swap2[0]][global_swap2[1]] = arr[global_swap2[0]][
                 global_swap2[1]], arr[global_swap1[0]][global_swap1[1]]
 
+    if min_conflicts > origi:
+        return None
+
+
     if best_swap_pair:
         global_best_swap1 = (best_swap_pair[0][0] + pos1, best_swap_pair[0][1] + pos2)
         global_best_swap2 = (best_swap_pair[1][0] + pos1, best_swap_pair[1][1] + pos2)
@@ -120,7 +125,7 @@ def best_swap(arr,swaps,pos1,pos2):
         arr[global_best_swap2[0]][global_best_swap2[1]], arr[global_best_swap1[0]][global_best_swap1[1]]
         return best_swap_pair
 
-    return None
+
 
 
 #检测冲突（每行＋每列）
@@ -147,31 +152,27 @@ def hill_climbing(val,list):
 
     conflict_nums = conflict_count(init)
 
+
     #print('coflict '+str(conflict_nums))
 
     attempts = 0 #没招了
 
-    while conflict_nums > 0 and attempts < 1000 :
-        attempts += 1
+    while conflict_nums > 0 :
+        #attempts += 1
         #print('conflict now' + str(conflict_nums))
         random_num1 = random.choice([0, 3, 6])
         random_num2 = random.choice([0, 3, 6])
         best_pair = find_all_possibilities(init,random_num1, random_num2, list)
 
-
-
         if best_pair is not None:
             conflict_nums_after = conflict_count(init)
             if conflict_nums_after < conflict_nums:
-                conflict_nums_after = conflict_count(init)
+
                 conflict_nums = conflict_nums_after
-
-
-
-
+                #print(conflict_nums)
 
         else:
-            # 理论上如果没有找到更好的交换  但是我始终运行不到这
+            # 理论上如果没有找到更好的交换
             print('No better swap found.')
             break  # 或者尝试其他策略
 
