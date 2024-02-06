@@ -166,10 +166,10 @@ def hill_climbing(val,list):
 
         if best_pair is not None:
             conflict_nums_after = conflict_count(init)
-            if conflict_nums_after < conflict_nums:
+            #if conflict_nums_after < conflict_nums:
 
-                conflict_nums = conflict_nums_after
-                print("on a " + str(conflict_nums) + " conflicts")
+            conflict_nums = conflict_nums_after
+            print("on a " + str(conflict_nums) + " conflicts")
 
         else:
             # 理论上如果没有找到更好的交换
