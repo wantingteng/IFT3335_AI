@@ -146,13 +146,13 @@ def annealing_swap(arr, swaps, pos1, pos2, temperature):
 def simulated_annealing(val, list):
     best_swap = True
 
-    temperature = 1000
+    temperature = 100
 
     init = initial(val)
 
     conflict_nums = conflict_count(init)
 
-    while temperature > 0.01:
+    while temperature > 0.001:
 
         #random_num1 = random.choice([0, 3, 6])
         #random_num2 = random.choice([0, 3, 6])
