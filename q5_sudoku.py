@@ -154,25 +154,16 @@ def simulated_annealing(val, list):
 
     while temperature > 0.001:
 
-        #random_num1 = random.choice([0, 3, 6])
-        #random_num2 = random.choice([0, 3, 6])
         for i in range(0, 9, 3):  # 外层循环，遍历宫格的行
             for j in range(0, 9, 3):  # 内层循环，遍历宫格的列
-                # 对于每个宫格，使用其起始坐标（i, j）作为参数调用 find_all_possibilities
-                best_swap = find_all_possibilities(init, i, j, list, temperature)
+
+                find_all_possibilities(init, i, j, list, temperature)
 
                 conflict_nums_after = conflict_count(init)
 
                 conflict_nums = conflict_nums_after
-                #print("on a " + str(conflict_nums) + " conflicts")
 
                 temperature = temperature * 0.99
-
-                # if best_swap:
-                #             temperature = temperature * 0.99
-                # else:
-                #             continue
-                #
 
 
 
